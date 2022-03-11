@@ -56,9 +56,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\TextFile\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Requirements\Question.txt" />
   </ItemGroup>
