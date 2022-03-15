@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace TestReading
+namespace TextAnalyzer
 {
     public class File
     {
