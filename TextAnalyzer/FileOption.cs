@@ -11,7 +11,8 @@ namespace TextAnalyzer
         {
         }
 
-
+        static string[] specialChar = new string[] { @"\", "|", "!", "#", "$", "%", "&", "/", "(", ")", "=", "?", "»", "«", "@", "£", "§", "€", "{", "}", ".", "-", "–", ";", "'", "<", ">", "_", "," };
+        static  char[] escapeSequence = new char[] { '\r', '\n', '\t' };
 
         internal static void WordCount(string source)
         {
@@ -36,26 +37,27 @@ namespace TextAnalyzer
 
         internal static void AllWordCount(string source)
         {
-            Console.WriteLine($"Count : {source.Split(' ').Count()}\n");
+            Console.WriteLine($"Count : {source.Split(new char[] { ' ', '\r', '\n', '\t' }).Where(w => !string.IsNullOrEmpty(w) && !specialChar.Contains(w)).Count()}\n");
         }
 
         internal static void AllCharCount(string source)
         {
-            Console.WriteLine($"Count : {source.ToArray().Where(c => !char.IsWhiteSpace(c)).Select(s => s).Count()}\nChar Count with Space: {source.ToCharArray().Count()}\n");
+            Console.WriteLine($"Count : {source.ToArray().Where(c => !char.IsWhiteSpace(c)).Select(s => s).Count()}\nChar Count with Space: {source.ToCharArray().Where(w => !escapeSequence.Contains(w)).Count()}\n");
         }
 
         internal static void Occurring(string source)
         {
-            var counts = Regex.Replace(source, @"[^0-9a-zA-Z ]+", "").Split(' ')
+            var counts = Regex.Replace(source, @"[^0-9a-zA-Z\n\r\t/ ]+", "").Split(new char[] { ' ', '\r', '\n', '\t', '/' })
                                 .GroupBy(g => g)
                                 .OrderByDescending(g => g.Count())
-                                .Select(w => new { w.Key, count = w.Count(), Length = w.Key.Length })
-                                .Where(w => w.count > 1).ToList();
+                                .Select(w => new { w.Key, Count = w.Count(), Length = w.Key.Length })
+                                .Where(w => !string.IsNullOrEmpty(w.Key)).ToList();
+
 
             var count = 1;
 
             Console.WriteLine($"Word and its frequency:\n");
-            counts.ForEach(w => Console.WriteLine($"{count++}: {w.Key} => {w.count} Times"));
+            counts.Where(w => w.Count > 1).Take(5).ToList().ForEach(w => Console.WriteLine($"{count++}: {w.Key} => {w.Count} Times"));
 
             var longestWord = counts?.OrderByDescending(w => w.Length)?.FirstOrDefault();
             Console.WriteLine($"\nlongest word is [{longestWord?.Key}] with Length {longestWord?.Length}\n");
